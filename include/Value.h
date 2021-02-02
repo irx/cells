@@ -5,5 +5,27 @@
 class Value
 {
 	public:
-	void print(void);
+	enum Type {
+		INTEGER,
+		DOUBLE,
+		STRING
+	};
+	Value(void);
+	Value(double);
+	Value(int);
+	Value(const std::string &);
+	Value(const char *);
+	~Value(void);
+
+	std::string eval(void) const;
+	Type get_type(void) const;
+
+	private:
+	union _Value {
+		int i;
+		double d;
+		std::string *s;
+	};
+	_Value m_value;
+	Type m_type;
 };

@@ -15,11 +15,15 @@ LDFLAGS = # no deps ;P
 
 BIN = cells
 HDR = \
+      include/Cell.h \
       include/Display.h \
+      include/Sheet.h \
       include/Value.h
 SRC = \
+      src/Cell.cc \
       src/Display.cc \
       src/main.cc \
+      src/Sheet.cc \
       src/Value.cc
 OBJ = ${SRC:.cc=.o}
 
