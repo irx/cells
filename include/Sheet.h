@@ -9,6 +9,7 @@ class Sheet
 	~Sheet(void);
 
 	void insert(Cell::Pos, Value);
+	std::vector<Cell> get_cells(const Cell::Range &) const;
 
 	private:
 	std::vector<unsigned> m_col_siz, m_row_siz;
