@@ -1,4 +1,5 @@
-/* TUI spreadsheet
+/**
+ * TUI spreadsheet
  * 2021 Maksymilian Mruszczak <u at one u x dot o r g>
  */
 
@@ -15,6 +16,14 @@ class Cell
 		Pos(void);
 		Pos(const std::string &);
 		bool operator<(const Pos &) const;
+		std::string get_addr(void) const;
+	};
+	struct Range {
+		Pos begin, end;
+
+		Range(void);
+		Range(Pos, Pos);
+		Range(const std::string &);
 		std::string get_addr(void) const;
 	};
 

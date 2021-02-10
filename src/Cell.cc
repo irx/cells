@@ -79,3 +79,22 @@ Cell::Pos::get_addr(void) const
 	/* put address string together */
 	return (col_iter ? "" : "$") + col_str + (row_iter ? "" : "$") + std::to_string(row);
 }
+
+Cell::Range::Range(void) : begin(), end()
+{}
+
+Cell::Range::Range(Pos b, Pos e) : begin(b), end(e)
+{}
+
+Cell::Range::Range(const std::string &str)
+{
+	auto delim = str.find(":");
+	begin = Pos(str.substr(0, delim));
+	end = Pos(str.substr(delim + 1));
+}
+
+std::string
+Cell::Range::get_addr(void) const
+{
+	return begin.get_addr() + ":" + end.get_addr();
+}
