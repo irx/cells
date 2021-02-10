@@ -66,8 +66,16 @@ Cell::Pos::operator<(const Pos &p) const
 std::string
 Cell::Pos::get_addr(void) const
 {
+	/* convert column number to A-Z ``digits'' */
 	std::string col_str;
-	unsigned lvl = 0;
-	/* tbd */
-	return "A" + std::to_string(row);
+	unsigned nsrc, src = col;
+	constexpr unsigned diff = LAST_LETTER - FIRST_LETTER + 1;
+	while (src > diff) {
+		nsrc = --src / diff;
+		col_str.insert(0, 1, (char)(src - (nsrc * diff) + FIRST_LETTER));
+		src = nsrc;
+	}
+	col_str.insert(0, 1, (char)src + FIRST_LETTER - 1);
+	/* put address string together */
+	return (col_iter ? "" : "$") + col_str + (row_iter ? "" : "$") + std::to_string(row);
 }
