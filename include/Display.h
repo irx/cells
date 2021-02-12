@@ -1,11 +1,12 @@
-/* TUI spreadsheet
+/*
+ * TUI spreadsheet
  * 2021 Maksymilian Mruszczak <u at one u x dot o r g>
  */
 
 class Display
 {
 public:
-	Display(void);
+	Display(std::shared_ptr<Sheet>);
 	~Display(void);
 
 	void take_cmd(void);
@@ -18,13 +19,15 @@ public:
 private:
 	struct Tty;
 
-	void clear();
+	void clear(void);
 	void move(unsigned, unsigned);
 	void set_raw(void);
 	void set_cooked(void);
+	void update_view(void);
 
 	void draw_status_bar(const std::string &str = "");
 
 	std::unique_ptr<Tty> m_tty;
-	Cell::Range m_view;
+	std::shared_ptr<Sheet> m_sheet;
+	Cell::Range m_view, m_cursor;
 };

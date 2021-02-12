@@ -17,6 +17,9 @@
 Sheet::Sheet(void)
 {}
 
+Sheet::~Sheet(void)
+{}
+
 void
 Sheet::insert(Cell::Pos pos, Value value)
 {}

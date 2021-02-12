@@ -27,7 +27,7 @@ struct Display::Tty {
 	struct termios orig_conf;
 };
 
-Display::Display(void)
+Display::Display(std::shared_ptr<Sheet> sht) : m_sheet(sht)
 {
 	m_tty = std::make_unique<Tty>();
 	printf("\33[?1049h"); /* save screen */
