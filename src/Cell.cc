@@ -70,7 +70,7 @@ Cell::Pos::operator==(const Pos &p) const
 }
 
 std::string
-Cell::Pos::get_addr(void) const
+Cell::Pos::get_col_str(void) const
 {
 	/* convert column number to A-Z ``digits'' */
 	std::string col_str;
@@ -82,8 +82,14 @@ Cell::Pos::get_addr(void) const
 		src = nsrc;
 	}
 	col_str.insert(0, 1, (char)(src + FIRST_LETTER - 1));
+	return col_str;
+}
+
+std::string
+Cell::Pos::get_addr(void) const
+{
 	/* put address string together */
-	return (col_iter ? "" : "$") + col_str + (row_iter ? "" : "$") + std::to_string(row);
+	return (col_iter ? "" : "$") + get_col_str() + (row_iter ? "" : "$") + std::to_string(row);
 }
 
 Cell::Range::Range(void) : begin(), end()

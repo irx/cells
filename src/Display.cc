@@ -1,4 +1,5 @@
-/* TUI spreadsheet
+/*
+ * TUI spreadsheet
  * 2021 Maksymilian Mruszczak <u at one u x dot o r g>
  */
 
@@ -155,7 +156,7 @@ Display::draw_margins(void)
 	Cell::Pos p;
 	move(6, 0);
 	for (p.col = m_view.begin.col; p.col < m_view.end.col; ++p.col)
-		draw_cell(std::to_string(p.col), m_sheet->get_col_siz(p.col), false, MARGIN_FG, MARGIN_BG);
+		draw_cell(p.get_col_str(), m_sheet->get_col_siz(p.col), false, MARGIN_FG, MARGIN_BG);
 	move(0, 2);
 	for (p.row = m_view.begin.row; p.row < m_view.end.row; ++p.row) {
 		draw_cell(std::to_string(p.row), 5, false, MARGIN_FG, MARGIN_BG);

@@ -17,6 +17,7 @@ class Cell
 		Pos(const std::string &);
 		bool operator<(const Pos &) const;
 		bool operator==(const Pos &) const;
+		std::string get_col_str(void) const;
 		std::string get_addr(void) const;
 	};
 	struct Range {
