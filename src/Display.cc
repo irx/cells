@@ -19,6 +19,9 @@
 #include <Sheet.h>
 #include <Display.h>
 
+#define MARGIN_FG 244
+#define MARGIN_BG 232
+
 static void signal_handler(int);
 
 unsigned int Display::COLS = 0, Display::LINES = 0;
@@ -27,7 +30,7 @@ struct Display::Tty {
 	struct termios orig_conf;
 };
 
-Display::Display(std::shared_ptr<Sheet> sht) : m_sheet(sht)
+Display::Display(std::shared_ptr<Sheet> sht) : m_sheet(sht), m_view("A1:G30") // TMP
 {
 	m_tty = std::make_unique<Tty>();
 	printf("\33[?1049h"); /* save screen */
@@ -133,6 +136,31 @@ Display::draw_status_bar(const std::string &str)
 	move(0, LINES - 1);
 	std::string fmt = "\33[1;48;5;236;38;5;7m NORMAL \33[48;5;238;38;5;248m%" + std::to_string(COLS - 8) +"s\33[0m";
 	printf(fmt.c_str(), str.c_str());
+	draw_margins(); // TMP
+}
+
+void
+Display::draw_cell(const std::string &s, unsigned l, bool highlight, int fg, int bg)
+{
+	std::string fgs = (fg < 0) ? "" : ";38;5;" + std::to_string(fg);
+	std::string bgs = (bg < 0) ? "" : ";48;5;" + std::to_string(bg);
+	std::string inv = highlight ? ";7" : "";
+	std::string fmt = "\33[" + fgs + bgs + inv + "m%" + std::to_string(l) + "s\33[0m";
+	printf(fmt.c_str(), s.c_str());
+}
+
+void
+Display::draw_margins(void)
+{
+	Cell::Pos p;
+	move(6, 0);
+	for (p.col = m_view.begin.col; p.col < m_view.end.col; ++p.col)
+		draw_cell(std::to_string(p.col), m_sheet->get_col_siz(p.col), false, MARGIN_FG, MARGIN_BG);
+	move(0, 2);
+	for (p.row = m_view.begin.row; p.row < m_view.end.row; ++p.row) {
+		draw_cell(std::to_string(p.row), 5, false, MARGIN_FG, MARGIN_BG);
+		printf("\n");
+	}
 }
 
 void

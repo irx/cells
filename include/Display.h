@@ -26,6 +26,8 @@ private:
 	void update_view(void);
 
 	void draw_status_bar(const std::string &str = "");
+	void draw_cell(const std::string &s, unsigned l, bool highlight = false, int fg = -1, int bg = -1);
+	void draw_margins(void);
 
 	std::unique_ptr<Tty> m_tty;
 	std::shared_ptr<Sheet> m_sheet;
