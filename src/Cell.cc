@@ -75,7 +75,7 @@ Cell::Pos::get_addr(void) const
 		col_str.insert(0, 1, (char)(src - (nsrc * diff) + FIRST_LETTER));
 		src = nsrc;
 	}
-	col_str.insert(0, 1, (char)src + FIRST_LETTER - 1);
+	col_str.insert(0, 1, (char)(src + FIRST_LETTER - 1));
 	/* put address string together */
 	return (col_iter ? "" : "$") + col_str + (row_iter ? "" : "$") + std::to_string(row);
 }
