@@ -10,9 +10,13 @@
 #include <termios.h>
 
 #include <functional>
+#include <map>
 #include <memory>
 #include <iostream>
 #include <stdexcept>
+#include <Value.h>
+#include <Cell.h>
+#include <Sheet.h>
 #include <Display.h>
 
 static void signal_handler(int);

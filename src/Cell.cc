@@ -63,6 +63,12 @@ Cell::Pos::operator<(const Pos &p) const
 	return (row < p.row && col < p.col);
 }
 
+bool
+Cell::Pos::operator==(const Pos &p) const
+{
+	return (row == p.row && col == p.col);
+}
+
 std::string
 Cell::Pos::get_addr(void) const
 {

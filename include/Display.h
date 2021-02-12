@@ -26,4 +26,5 @@ private:
 	void draw_status_bar(const std::string &str = "");
 
 	std::unique_ptr<Tty> m_tty;
+	Cell::Range m_view;
 };

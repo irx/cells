@@ -3,9 +3,12 @@
  */
 
 #include <iostream>
+#include <map>
 #include <memory>
-#include <Display.h>
 #include <Value.h>
+#include <Cell.h>
+#include <Sheet.h>
+#include <Display.h>
 
 int
 main(void)

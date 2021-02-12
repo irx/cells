@@ -1,4 +1,5 @@
-/* TUI spreadsheet
+/*
+ * TUI spreadsheet
  * 2021 Maksymilian Mruszczak <u at one u x dot o r g>
  */
 
@@ -58,4 +59,16 @@ unsigned
 Sheet::get_row_siz(unsigned idx) const
 {
 	return m_row_siz.count(idx) > 0 ? m_row_siz.at(idx) : DEFAULT_HEIGHT;
+}
+
+std::pair<unsigned, unsigned>
+Sheet::get_abs_pos(const Cell::Pos &p) const
+{
+	unsigned c, r, i;
+	c = r = 0;
+	for (i = 1; i < p.col; ++i)
+		c += get_col_siz(i);
+	for (i = 1; i < p.row; ++i)
+		r += get_row_siz(i);
+	return std::make_pair(c, r);
 }
