@@ -15,6 +15,7 @@
 #include <memory>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 #include <Value.h>
 #include <Cell.h>
 #include <Sheet.h>
@@ -162,6 +163,34 @@ Display::draw_margins(void)
 	for (p.row = m_view.begin.row; p.row < m_view.end.row; ++p.row) {
 		draw_cell(std::to_string(p.row), 5, false, MARGIN_FG, MARGIN_BG);
 		printf("\n");
+	}
+}
+
+void
+Display::draw_cells(void)
+{
+	auto absview = m_sheet->get_abs_pos(m_view.begin); /* use view beginnig as reference position */
+	/* first draw cursor range */
+	for (Cell::Pos cur = m_cursor.begin; cur < m_cursor.end; ++cur.col)
+		for (cur.row = m_cursor.begin.row; cur.row < m_cursor.end.row; ++cur.row)
+			if (m_view.contains(cur)) {
+				auto absp = m_sheet->get_abs_pos(cur);
+				/* substract view begin position and add margin size */
+				absp.first -= absview.first - 5;
+				absp.second -= absview.second - 1;
+				move(absp.first, absp.second);
+				draw_cell("", m_sheet->get_col_siz(cur.col), true);
+			}
+	/* draw cells with values */
+	auto cells = m_sheet->get_cells(m_view);
+	for (auto &c : cells) {
+		auto p = c.get_pos();
+		auto absp = m_sheet->get_abs_pos(p); /* get absolute coordinates */
+		/* adjust to view */
+		absp.first -= absview.first - 5;
+		absp.second -= absview.second - 1;
+		move(absp.first, absp.second);
+		draw_cell(c.get_value().eval(), m_sheet->get_col_siz(p.col), m_cursor.contains(p));
 	}
 }
 

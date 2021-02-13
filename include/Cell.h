@@ -27,9 +27,12 @@ class Cell
 		Range(Pos, Pos);
 		Range(const std::string &);
 		std::string get_addr(void) const;
+		bool contains(const Pos &) const;
 	};
 
 	Cell(Value);
+	Value get_value(void) const;
+	Pos get_pos(void) const;
 
 	private:
 	Value m_value;

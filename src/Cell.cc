@@ -18,6 +18,18 @@ Cell::Cell(Value v)
 	m_value = v;
 }
 
+Value
+Cell::get_value(void) const
+{
+	return m_value;
+}
+
+Cell::Pos
+Cell::get_pos(void) const
+{
+	return m_pos;
+}
+
 Cell::Pos::Pos(void) : row(0), col(0), row_iter(true), col_iter(true)
 {}
 
@@ -109,4 +121,10 @@ std::string
 Cell::Range::get_addr(void) const
 {
 	return begin.get_addr() + ":" + end.get_addr();
+}
+
+bool
+Cell::Range::contains(const Pos &p) const
+{
+	return (p < end && begin < p);
 }
