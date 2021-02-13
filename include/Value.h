@@ -17,6 +17,7 @@ class Value
 	Value(const char *);
 	~Value(void);
 
+	Value operator+(unsigned) const;
 	std::string eval(void) const;
 	Type get_type(void) const;
 

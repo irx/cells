@@ -42,6 +42,20 @@ Value::~Value(void)
 		delete m_value.s;
 }
 
+Value
+Value::operator+(unsigned ui) const
+{
+	switch (m_type) {
+	case STRING:
+		return Value(*m_value.s);
+	case INTEGER:
+		return Value(m_value.i + (int)ui);
+	case DOUBLE:
+		return Value(m_value.d + (double)ui);
+	}
+	return Value();
+}
+
 std::string
 Value::eval(void) const
 {

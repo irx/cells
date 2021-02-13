@@ -86,6 +86,15 @@ Cell::Pos::operator<=(const Pos &p) const
 	return (row <= p.row && col <= p.col);
 }
 
+Cell::Pos
+Cell::Pos::operator-(const Pos &p) const
+{
+	Cell::Pos r;
+	r.col = col - p.col;
+	r.row = row - p.row;
+	return r;
+}
+
 std::string
 Cell::Pos::get_col_str(void) const
 {
@@ -132,4 +141,14 @@ bool
 Cell::Range::contains(const Pos &p) const
 {
 	return (p <= end && begin <= p);
+}
+
+unsigned
+Cell::Range::index_of(const Pos &p) const
+{
+	/* return idx indicating addr position in this range */
+	if (!contains(p))
+		return 0;
+	auto diff = p - begin;
+	return diff.col + diff.row;
 }

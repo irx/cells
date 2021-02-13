@@ -21,8 +21,12 @@ Sheet::~Sheet(void)
 {}
 
 void
-Sheet::insert(Cell::Pos pos, Value value)
-{}
+Sheet::insert(Cell::Range range, Value value)
+{
+	for (Cell::Pos cur = range.begin; cur.col < range.end.col; ++cur.col)
+		for (cur.col = range.begin.col; cur.row < range.end.row; ++cur.row)
+			m_cells[cur] = Cell(cur, value + range.index_of(cur));
+}
 
 Value
 Sheet::parse(const std::string &s)

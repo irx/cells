@@ -18,6 +18,7 @@ class Cell
 		bool operator<(const Pos &) const;
 		bool operator==(const Pos &) const;
 		bool operator<=(const Pos &) const;
+		Pos operator-(const Pos &) const;
 		std::string get_col_str(void) const;
 		std::string get_addr(void) const;
 	};
@@ -29,9 +30,10 @@ class Cell
 		Range(const std::string &);
 		std::string get_addr(void) const;
 		bool contains(const Pos &) const;
+		unsigned index_of(const Pos &) const;
 	};
 
-	Cell(Value);
+	Cell(Pos = Pos(), Value = Value());
 	Value get_value(void) const;
 	Pos get_pos(void) const;
 
