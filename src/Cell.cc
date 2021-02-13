@@ -13,9 +13,8 @@
 #define LAST_LETTER 0x5a
 #define IS_LETTER(c) (c >= FIRST_LETTER && c <= LAST_LETTER)
 
-Cell::Cell(Value v)
+Cell::Cell(Cell::Pos p, Value v) : m_value(v), m_pos(p)
 {
-	m_value = v;
 }
 
 Value
@@ -132,7 +131,5 @@ Cell::Range::get_addr(void) const
 bool
 Cell::Range::contains(const Pos &p) const
 {
-	return true;
-	//return (p.col <= end.col && p.row <= end.row && begin.col <= p.col && begin.row <= p.row);
-	//return (p <= end && begin <= p);
+	return (p <= end && begin <= p);
 }
