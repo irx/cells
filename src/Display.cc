@@ -72,10 +72,61 @@ Display::take_input(void)
 		clear();
 		switch (c) {
 		case 'j':
+			++m_cursor.end.row;
+			m_cursor.begin = m_cursor.end;
+			update_vview();
 			draw_status_bar("down");
 			break;
 		case 'k':
+			if (m_cursor.end.row > 1)
+				--m_cursor.end.row;
+			m_cursor.begin = m_cursor.end;
+			update_vview();
 			draw_status_bar("up");
+			break;
+		case 'l':
+			++m_cursor.end.col;
+			m_cursor.begin = m_cursor.end;
+			update_hview();
+			draw_status_bar("right");
+			break;
+		case 'h':
+			if (m_cursor.end.col > 1)
+				--m_cursor.end.col;
+			m_cursor.begin = m_cursor.end;
+			update_hview();
+			draw_status_bar("left");
+			break;
+		case 'g':
+			m_cursor = Cell::Range("A1:A1");
+			update_view();
+			draw_status_bar("go to top");
+			break;
+		case 'J':
+			++m_cursor.end.row;
+			update_vview();
+			draw_status_bar("extend vertical");
+			break;
+		case 'K':
+			if (m_cursor.end.row > m_cursor.begin.row)
+				--m_cursor.end.row;
+			update_vview();
+			draw_status_bar("retract vertical");
+			break;
+		case 'L':
+			++m_cursor.end.col;
+			update_hview();
+			draw_status_bar("extend horizontal");
+			break;
+		case 'H':
+			if (m_cursor.end.col > m_cursor.begin.col)
+				--m_cursor.end.col;
+			update_hview();
+			draw_status_bar("retract horizontal");
+			break;
+		case 'G':
+			m_cursor.begin = m_cursor.end = m_view.end;
+			draw_status_bar("go to bottom edge");
 			break;
 		case ':':
 			draw_status_bar();
@@ -86,7 +137,6 @@ Display::take_input(void)
 		default:
 			draw_status_bar();
 		}
-		m_cursor = Cell::Range("A1:B2"); // TMP
 		draw_cells();
 		auto curp = get_disp_pos(m_cursor.end);
 		move(curp.first, curp.second); /* jump to cursor (selection) end postion */
@@ -184,12 +234,12 @@ void
 Display::draw_cells(void)
 {
 	/* first draw cursor range */
-	for (Cell::Pos cur = m_cursor.begin; cur < m_cursor.end; ++cur.col)
-		for (cur.row = m_cursor.begin.row; cur.row < m_cursor.end.row; ++cur.row)
+	for (Cell::Pos cur = m_cursor.begin; cur.col <= m_cursor.end.col; ++cur.col)
+		for (cur.row = m_cursor.begin.row; cur.row <= m_cursor.end.row; ++cur.row)
 			if (m_view.contains(cur)) {
 				auto absp = get_disp_pos(cur); /* translate cell addr to coord */
 				move(absp.first, absp.second);
-				draw_cell("", m_sheet->get_col_siz(cur.col), true);
+				draw_cell(cur.get_addr(), m_sheet->get_col_siz(cur.col), true);
 			}
 	/* draw cells with values */
 	auto cells = m_sheet->get_cells(m_view);
@@ -222,7 +272,7 @@ Display::update_hview(void)
 		auto b = m_sheet->get_abs_pos(m_view.begin);
 		auto e = m_sheet->get_abs_pos(m_view.end);
 		diff = e.first - b.first;
-		while (diff > COLS)
+		while (diff > COLS - 6)
 			diff -= m_sheet->get_col_siz(m_view.begin.col++);
 	} else if (m_view.begin.col > m_cursor.end.col) {
 		auto diff = m_view.begin.col - m_cursor.end.col;
@@ -230,8 +280,8 @@ Display::update_hview(void)
 		auto b = m_sheet->get_abs_pos(m_view.begin);
 		auto e = m_sheet->get_abs_pos(m_view.end);
 		diff = e.first - b.first;
-		while (diff > COLS)
-			diff -= m_sheet->get_col_siz(m_view.begin.col++);
+		while (diff > COLS - 6)
+			diff -= m_sheet->get_col_siz(m_view.end.col--);
 	}
 }
 
@@ -244,7 +294,7 @@ Display::update_vview(void)
 		auto b = m_sheet->get_abs_pos(m_view.begin);
 		auto e = m_sheet->get_abs_pos(m_view.end);
 		diff = e.second - b.second;
-		while (diff > LINES)
+		while (diff > LINES - 4)
 			diff -= m_sheet->get_row_siz(m_view.begin.row++);
 	} else if (m_view.begin.row > m_cursor.end.row) {
 		auto diff = m_view.begin.row - m_cursor.end.row;
@@ -252,8 +302,8 @@ Display::update_vview(void)
 		auto b = m_sheet->get_abs_pos(m_view.begin);
 		auto e = m_sheet->get_abs_pos(m_view.end);
 		diff = e.second - b.second;
-		while (diff > LINES)
-			diff -= m_sheet->get_row_siz(m_view.begin.row++);
+		while (diff > LINES - 4)
+			diff -= m_sheet->get_row_siz(m_view.end.row--);
 	}
 }
 

@@ -81,6 +81,12 @@ Cell::Pos::operator==(const Pos &p) const
 	return (row == p.row && col == p.col);
 }
 
+bool
+Cell::Pos::operator<=(const Pos &p) const
+{
+	return (row <= p.row && col <= p.col);
+}
+
 std::string
 Cell::Pos::get_col_str(void) const
 {
@@ -126,5 +132,7 @@ Cell::Range::get_addr(void) const
 bool
 Cell::Range::contains(const Pos &p) const
 {
-	return (p < end && begin < p);
+	return true;
+	//return (p.col <= end.col && p.row <= end.row && begin.col <= p.col && begin.row <= p.row);
+	//return (p <= end && begin <= p);
 }
