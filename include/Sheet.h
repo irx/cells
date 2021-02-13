@@ -19,5 +19,4 @@ class Sheet
 	private:
 	std::map<unsigned, unsigned> m_col_siz, m_row_siz;
 	std::map<Cell::Pos, Cell> m_cells;
-	Cell::Pos m_selected;
 };

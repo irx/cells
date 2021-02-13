@@ -31,7 +31,7 @@ struct Display::Tty {
 	struct termios orig_conf;
 };
 
-Display::Display(std::shared_ptr<Sheet> sht) : m_sheet(sht), m_view("A1:G30") // TMP
+Display::Display(std::shared_ptr<Sheet> sht) : m_sheet(sht), m_cursor("A1:A1")
 {
 	m_tty = std::make_unique<Tty>();
 	printf("\33[?1049h"); /* save screen */
@@ -48,6 +48,7 @@ Display::Display(std::shared_ptr<Sheet> sht) : m_sheet(sht), m_view("A1:G30") //
 	if (sigaction(SIGWINCH, &sa, NULL) == -1)
 		throw std::runtime_error("failed initialising signal handling");
 	update_win_size();
+	update_view();
 	set_raw();
 }
 
@@ -161,6 +162,62 @@ Display::draw_margins(void)
 	for (p.row = m_view.begin.row; p.row < m_view.end.row; ++p.row) {
 		draw_cell(std::to_string(p.row), 5, false, MARGIN_FG, MARGIN_BG);
 		printf("\n");
+	}
+}
+
+void
+Display::update_view(void)
+{
+	m_view.begin = m_view.end = m_cursor.end;
+	unsigned tmp = m_sheet->get_col_siz(m_view.end.col);
+	while (tmp < COLS - 6)
+		tmp += m_sheet->get_col_siz(m_view.end.col++);
+	tmp = m_sheet->get_row_siz(m_view.end.row);
+	while (tmp < LINES - 3)
+		tmp += m_sheet->get_row_siz(++m_view.end.row);
+}
+
+void
+Display::update_hview(void)
+{
+	if (m_view.end.col < m_cursor.end.col) {
+		auto diff = m_cursor.end.col - m_view.end.col;
+		m_view.end.col += diff;
+		auto b = m_sheet->get_abs_pos(m_view.begin);
+		auto e = m_sheet->get_abs_pos(m_view.end);
+		diff = e.first - b.first;
+		while (diff > COLS)
+			diff -= m_sheet->get_col_siz(m_view.begin.col++);
+	} else if (m_view.begin.col > m_cursor.end.col) {
+		auto diff = m_view.begin.col - m_cursor.end.col;
+		m_view.begin.col -= diff;
+		auto b = m_sheet->get_abs_pos(m_view.begin);
+		auto e = m_sheet->get_abs_pos(m_view.end);
+		diff = e.first - b.first;
+		while (diff > COLS)
+			diff -= m_sheet->get_col_siz(m_view.begin.col++);
+	}
+}
+
+void
+Display::update_vview(void)
+{
+	if (m_view.end.row < m_cursor.end.row) {
+		auto diff = m_cursor.end.row - m_view.end.row;
+		m_view.end.row += diff;
+		auto b = m_sheet->get_abs_pos(m_view.begin);
+		auto e = m_sheet->get_abs_pos(m_view.end);
+		diff = e.second - b.second;
+		while (diff > LINES)
+			diff -= m_sheet->get_row_siz(m_view.begin.row++);
+	} else if (m_view.begin.row > m_cursor.end.row) {
+		auto diff = m_view.begin.row - m_cursor.end.row;
+		m_view.begin.row -= diff;
+		auto b = m_sheet->get_abs_pos(m_view.begin);
+		auto e = m_sheet->get_abs_pos(m_view.end);
+		diff = e.second - b.second;
+		while (diff > LINES)
+			diff -= m_sheet->get_row_siz(m_view.begin.row++);
 	}
 }
 
