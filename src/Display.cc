@@ -86,7 +86,10 @@ Display::take_input(void)
 		default:
 			draw_status_bar();
 		}
-		move(0, 0);
+		m_cursor = Cell::Range("A1:B2"); // TMP
+		draw_cells();
+		auto curp = get_disp_pos(m_cursor.end);
+		move(curp.first, curp.second); /* jump to cursor (selection) end postion */
 		fflush(stdout);
 	}
 }
@@ -133,6 +136,17 @@ Display::set_cooked(void)
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &cooked);
 }
 
+std::pair<unsigned, unsigned>
+Display::get_disp_pos(const Cell::Pos &p) const
+{
+	/* translate cell addr to display position */
+	auto absview = m_sheet->get_abs_pos(m_view.begin);
+	auto absp = m_sheet->get_abs_pos(p);
+	absp.first -= absview.first - 6;
+	absp.second -= absview.second - 2;
+	return absp;
+}
+
 void
 Display::draw_status_bar(const std::string &str)
 {
@@ -169,15 +183,11 @@ Display::draw_margins(void)
 void
 Display::draw_cells(void)
 {
-	auto absview = m_sheet->get_abs_pos(m_view.begin); /* use view beginnig as reference position */
 	/* first draw cursor range */
 	for (Cell::Pos cur = m_cursor.begin; cur < m_cursor.end; ++cur.col)
 		for (cur.row = m_cursor.begin.row; cur.row < m_cursor.end.row; ++cur.row)
 			if (m_view.contains(cur)) {
-				auto absp = m_sheet->get_abs_pos(cur);
-				/* substract view begin position and add margin size */
-				absp.first -= absview.first - 5;
-				absp.second -= absview.second - 1;
+				auto absp = get_disp_pos(cur); /* translate cell addr to coord */
 				move(absp.first, absp.second);
 				draw_cell("", m_sheet->get_col_siz(cur.col), true);
 			}
@@ -185,10 +195,7 @@ Display::draw_cells(void)
 	auto cells = m_sheet->get_cells(m_view);
 	for (auto &c : cells) {
 		auto p = c.get_pos();
-		auto absp = m_sheet->get_abs_pos(p); /* get absolute coordinates */
-		/* adjust to view */
-		absp.first -= absview.first - 5;
-		absp.second -= absview.second - 1;
+		auto absp = get_disp_pos(p); /* get absolute coordinates */
 		move(absp.first, absp.second);
 		draw_cell(c.get_value().eval(), m_sheet->get_col_siz(p.col), m_cursor.contains(p));
 	}
