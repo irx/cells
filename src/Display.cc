@@ -140,6 +140,10 @@ Display::take_input(void)
 			clear();
 			draw_status_bar();
 			break;
+		case 'd':
+			m_sheet->remove(m_cursor);
+			clear();
+			draw_status_bar("remove");
 		default:
 			draw_status_bar();
 		}

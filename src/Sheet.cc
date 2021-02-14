@@ -28,6 +28,14 @@ Sheet::insert(const Cell::Range &range, const Value &value)
 			m_cells[cur] = Cell(cur, value + range.index_of(cur));
 }
 
+void
+Sheet::remove(const Cell::Range &range)
+{
+	for (Cell::Pos cur = range.begin; cur.col <= range.end.col; ++cur.col)
+		for (cur.row = range.begin.row; cur.row <= range.end.row; ++cur.row)
+			m_cells.erase(cur);
+}
+
 Value
 Sheet::parse(const std::string &s)
 {

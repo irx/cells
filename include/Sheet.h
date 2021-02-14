@@ -10,6 +10,7 @@ class Sheet
 	~Sheet(void);
 
 	void insert(const Cell::Range &, const Value &);
+	void remove(const Cell::Range &);
 	Value parse(const std::string &);
 	std::vector<Cell> get_cells(const Cell::Range &) const;
 	unsigned get_col_siz(unsigned) const;
