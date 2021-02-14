@@ -18,10 +18,10 @@ Cell::Cell(const Cell::Pos &p, const Value &v) : m_value(std::make_shared<Value>
 {
 }
 
-std::string
+std::shared_ptr<Value>
 Cell::get_value(void) const
 {
-	return m_value->eval();
+	return m_value;
 }
 
 Cell::Pos

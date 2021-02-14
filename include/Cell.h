@@ -34,7 +34,7 @@ class Cell
 	};
 
 	Cell(const Pos & = Pos(), const Value & = Value());
-	std::string get_value(void) const;
+	std::shared_ptr<Value> get_value(void) const;
 	Pos get_pos(void) const;
 
 	private:

@@ -223,12 +223,14 @@ Display::draw_status_bar(const std::string &str)
 }
 
 void
-Display::draw_cell(const std::string &s, unsigned l, bool highlight, int fg, int bg)
+Display::draw_cell(const std::string &s, unsigned l, bool highlight, bool fill, int fg, int bg)
 {
-	std::string fgs = (fg < 0) ? "" : ";38;5;" + std::to_string(fg);
-	std::string bgs = (bg < 0) ? "" : ";48;5;" + std::to_string(bg);
-	std::string inv = highlight ? ";7" : "";
-	std::string fmt = "\33[" + fgs + bgs + inv + "m%" + std::to_string(l) + "s\33[0m";
+	std::string fgs = (fg < 0) ? "" : ";38;5;" + std::to_string(fg),
+	            bgs = (bg < 0) ? "" : ";48;5;" + std::to_string(bg),
+	            inv = highlight ? ";7" : "",
+	            len = std::to_string(l);
+	len = fill ? len + "." + len : "." + len;
+	std::string fmt = "\33[" + fgs + bgs + inv + "m%" + len + "s\33[0m";
 	printf(fmt.c_str(), s.c_str());
 }
 
@@ -238,10 +240,10 @@ Display::draw_margins(void)
 	Cell::Pos p;
 	move(6, 0);
 	for (p.col = m_view.begin.col; p.col < m_view.end.col; ++p.col)
-		draw_cell(p.get_col_str(), m_sheet->get_col_siz(p.col), false, MARGIN_FG, MARGIN_BG);
+		draw_cell(p.get_col_str(), m_sheet->get_col_siz(p.col), (p.col == m_cursor.end.col), true, MARGIN_FG, MARGIN_BG);
 	move(0, 2);
 	for (p.row = m_view.begin.row; p.row < m_view.end.row; ++p.row) {
-		draw_cell(std::to_string(p.row), 5, false, MARGIN_FG, MARGIN_BG);
+		draw_cell(std::to_string(p.row), 5, (p.row == m_cursor.end.row), true, MARGIN_FG, MARGIN_BG);
 		printf("\n");
 	}
 }
@@ -255,7 +257,7 @@ Display::draw_cells(void)
 			if (m_view.contains(cur)) {
 				auto absp = get_disp_pos(cur); /* translate cell addr to coord */
 				move(absp.first, absp.second);
-				draw_cell(cur.get_addr(), m_sheet->get_col_siz(cur.col), true);
+				draw_cell("", m_sheet->get_col_siz(cur.col), true);
 			}
 	/* draw cells with values */
 	auto cells = m_sheet->get_cells(m_view);
@@ -263,8 +265,15 @@ Display::draw_cells(void)
 		auto p = c.get_pos();
 		if (m_view.contains(p)) {
 			auto absp = get_disp_pos(p); /* get absolute coordinates */
+			auto v = c.get_value();
+			unsigned colour = 1;
+			bool fill = true;
+			if (v->get_type() == Value::Type::STRING) {
+				colour = 7;
+				fill = false;
+			}
 			move(absp.first, absp.second);
-			draw_cell(c.get_value(), m_sheet->get_col_siz(p.col), m_cursor.contains(p));
+			draw_cell(v->eval(), m_sheet->get_col_siz(p.col), m_cursor.contains(p), fill, colour);
 		}
 	}
 }

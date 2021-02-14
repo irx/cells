@@ -30,7 +30,7 @@ private:
 
 	std::pair<unsigned, unsigned> get_disp_pos(const Cell::Pos &) const;
 	void draw_status_bar(const std::string &str = "");
-	void draw_cell(const std::string &s, unsigned l, bool highlight = false, int fg = -1, int bg = -1);
+	void draw_cell(const std::string &s, unsigned l, bool highlight = false, bool fill = true, int fg = -1, int bg = -1);
 	void draw_margins(void);
 	void draw_cells(void); /* draw all the cells within view range */
 
