@@ -16,6 +16,8 @@ class Sheet
 	unsigned get_col_siz(unsigned) const;
 	unsigned get_row_siz(unsigned) const;
 	std::pair<unsigned, unsigned> get_abs_pos(const Cell::Pos &) const;
+	void load(const std::string &);
+	void save(const std::string &) const;
 
 	private:
 	std::map<unsigned, unsigned> m_col_siz, m_row_siz;

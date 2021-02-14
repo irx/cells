@@ -3,6 +3,7 @@
  * 2021 Maksymilian Mruszczak <u at one u x dot o r g>
  */
 
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
@@ -86,4 +87,26 @@ Sheet::get_abs_pos(const Cell::Pos &p) const
 	for (i = 1; i < p.row; ++i)
 		r += get_row_siz(i);
 	return std::make_pair(c, r);
+}
+
+void
+Sheet::load(const std::string &filename)
+{
+}
+
+void
+Sheet::save(const std::string &filename) const
+{
+	std::fstream fs(filename, std::fstream::out);
+	fs << "CELLSF\n";
+	for (auto &c : m_col_siz)
+		fs << c.first << ":" << c.second << ";";
+	fs << '\n';
+	for (auto &c : m_row_siz)
+		fs << c.first << ":" << c.second << ";";
+	fs << '\n';
+	for (auto &c : m_cells) {
+		auto v = c.second.get_value();
+		fs << c.first.get_addr() << ";" << v->get_type() << ";" << v->eval() << '\n';
+	}
 }

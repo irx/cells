@@ -33,6 +33,10 @@ class Display
 	void update_view(void);
 	void update_hview(void); /* update horizontal view */
 	void update_vview(void); /* update vertical view */
+	void print_err(const char *);
+
+	void set_sheet_filename(const std::string &);
+	void save_sheet(void);
 
 	std::pair<unsigned, unsigned> get_disp_pos(const Cell::Pos &) const;
 	void draw_status_bar(const std::string &str = "");
@@ -43,5 +47,6 @@ class Display
 	std::unique_ptr<Tty> m_tty;
 	std::shared_ptr<Sheet> m_sheet;
 	Cell::Range m_view, m_cursor;
-	enum Mode m_mode;
+	std::string m_filename;
+	Mode m_mode;
 };

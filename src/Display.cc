@@ -137,8 +137,6 @@ Display::take_input(void)
 		case ':':
 			draw_status_bar();
 			take_cmd();
-			clear();
-			draw_status_bar();
 			break;
 		case 'i':
 			take_value();
@@ -149,6 +147,7 @@ Display::take_input(void)
 			m_sheet->remove(m_cursor);
 			clear();
 			draw_status_bar("remove");
+			break;
 		default:
 			draw_status_bar();
 		}
@@ -172,6 +171,13 @@ Display::take_cmd(void)
 	fflush(stdout);
 	std::string cmd;
 	std::cin >> cmd;
+	if (cmd == "f") {
+		std::cin >> cmd;
+		set_sheet_filename(cmd);
+	} else if (cmd == "w")
+		save_sheet();
+	else
+		print_err("unrecognised command");
 	set_raw();
 	m_mode = NORMAL;
 }
@@ -352,6 +358,33 @@ Display::update_vview(void)
 		while (diff > LINES - 4)
 			diff -= m_sheet->get_row_siz(m_view.end.row--);
 	}
+}
+
+void
+Display::print_err(const char *e)
+{
+	move(0, LINES);
+	printf("\33[31;1merror:\33[0m %s", e);
+}
+
+void
+Display::set_sheet_filename(const std::string &filename)
+{
+	m_filename = filename;
+	move(0, LINES);
+	printf("filename set to \"%s\"", filename.c_str());
+}
+
+void
+Display::save_sheet(void)
+{
+	if (m_filename.empty()) {
+		print_err("no filename set");
+		return;
+	}
+	m_sheet->save(m_filename);
+	move(0, LINES);
+	printf("written to file \"%s\"", m_filename.c_str());
 }
 
 void
