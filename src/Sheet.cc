@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <Value.h>
@@ -92,6 +93,31 @@ Sheet::get_abs_pos(const Cell::Pos &p) const
 void
 Sheet::load(const std::string &filename)
 {
+	std::fstream fs(filename, std::fstream::in);
+	std::string ln, tk; /* line, token */
+	size_t pos, pos2; /* delimiter position */
+	std::getline(fs, ln);
+	if (ln != "CELLSF")
+		throw std::runtime_error("invalid file type");
+	std::getline(fs, ln);
+	for (pos = 0; (pos = ln.find(";")) != std::string::npos && !ln.empty(); ln.erase(0, pos + 1)) {
+		tk = ln.substr(0, pos);
+		pos2 = tk.find(":");
+		m_col_siz[(unsigned)std::stoi(tk.substr(0, pos2))] = (unsigned)std::stoi(tk.substr(pos2 + 1));
+	}
+	std::getline(fs, ln);
+	for (pos = 0; (pos = ln.find(";")) != std::string::npos && !ln.empty(); ln.erase(0, pos + 1)) {
+		tk = ln.substr(0, pos);
+		pos2 = tk.find(":");
+		m_row_siz[(unsigned)std::stoi(tk.substr(0, pos2))] = (unsigned)std::stoi(tk.substr(pos2 + 1));
+	}
+	while (std::getline(fs, ln)) {
+		pos = ln.find(";");
+		tk = ln.substr(0, pos);
+		Cell::Pos p(tk);
+		tk = ln.substr(pos + 1);
+		m_cells[p] = Cell(p, parse(tk));
+	}
 }
 
 void
@@ -107,6 +133,6 @@ Sheet::save(const std::string &filename) const
 	fs << '\n';
 	for (auto &c : m_cells) {
 		auto v = c.second.get_value();
-		fs << c.first.get_addr() << ";" << v->get_type() << ";" << v->eval() << '\n';
+		fs << c.first.get_addr() << ";" << v->eval() << '\n';
 	}
 }

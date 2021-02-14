@@ -176,6 +176,8 @@ Display::take_cmd(void)
 		set_sheet_filename(cmd);
 	} else if (cmd == "w")
 		save_sheet();
+	else if (cmd == "r")
+		load_sheet();
 	else
 		print_err("unrecognised command");
 	set_raw();
@@ -385,6 +387,18 @@ Display::save_sheet(void)
 	m_sheet->save(m_filename);
 	move(0, LINES);
 	printf("written to file \"%s\"", m_filename.c_str());
+}
+
+void
+Display::load_sheet(void)
+{
+	if (m_filename.empty()) {
+		print_err("no filename set");
+		return;
+	}
+	m_sheet->load(m_filename);
+	move(0, LINES);
+	printf("read file \"%s\"", m_filename.c_str());
 }
 
 void

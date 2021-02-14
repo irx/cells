@@ -37,6 +37,7 @@ class Display
 
 	void set_sheet_filename(const std::string &);
 	void save_sheet(void);
+	void load_sheet(void);
 
 	std::pair<unsigned, unsigned> get_disp_pos(const Cell::Pos &) const;
 	void draw_status_bar(const std::string &str = "");
