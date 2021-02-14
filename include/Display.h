@@ -5,7 +5,13 @@
 
 class Display
 {
-public:
+	public:
+	enum Mode {
+		NORMAL,
+		INPUT,
+		COMMAND
+	};
+
 	Display(std::shared_ptr<Sheet>);
 	~Display(void);
 
@@ -17,7 +23,7 @@ public:
 	static void update_win_size(void);
 	static unsigned int COLS, LINES;
 
-private:
+	private:
 	struct Tty;
 
 	void clear(void);
@@ -37,4 +43,5 @@ private:
 	std::unique_ptr<Tty> m_tty;
 	std::shared_ptr<Sheet> m_sheet;
 	Cell::Range m_view, m_cursor;
+	enum Mode m_mode;
 };

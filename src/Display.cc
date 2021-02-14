@@ -26,6 +26,12 @@
 
 static void signal_handler(int);
 
+static const char *mode_str[] = {
+	"NORMAL",
+	"INPUT",
+	"COMMAND"
+};
+
 unsigned int Display::COLS = 0, Display::LINES = 0;
 
 struct Display::Tty {
@@ -65,7 +71,10 @@ Display::take_input(void)
 {
 	clear();
 	draw_status_bar("Hello!");
-	move(0, 0);
+	draw_margins();
+	draw_cells();
+	auto curp = get_disp_pos(m_cursor.end);
+	move(curp.first, curp.second);
 	fflush(stdout);
 	char c;
 	while (read(STDIN_FILENO, &c, 1) /*== 1*/ && c != 'q') {
@@ -135,7 +144,6 @@ Display::take_input(void)
 			draw_status_bar();
 			break;
 		case 'i':
-			draw_status_bar("input");
 			take_value();
 			clear();
 			draw_status_bar();
@@ -147,6 +155,7 @@ Display::take_input(void)
 		default:
 			draw_status_bar();
 		}
+		draw_margins();
 		draw_cells();
 		auto curp = get_disp_pos(m_cursor.end);
 		move(curp.first, curp.second); /* jump to cursor (selection) end postion */
@@ -157,6 +166,9 @@ Display::take_input(void)
 void
 Display::take_cmd(void)
 {
+	m_mode = COMMAND;
+	draw_margins();
+	draw_cells();
 	set_cooked();
 	move(0, LINES);
 	printf(":");
@@ -164,16 +176,24 @@ Display::take_cmd(void)
 	std::string cmd;
 	std::cin >> cmd;
 	set_raw();
+	m_mode = NORMAL;
 }
 
 void
 Display::take_value(void)
 {
+	m_mode = INPUT;
+	draw_status_bar("input");
+	draw_margins();
+	draw_cells();
 	set_cooked();
+	auto curp = get_disp_pos(m_cursor.end);
+	move(curp.first, curp.second);
 	std::string val;
-	std::cin >> val;
+	std::getline(std::cin, val);
 	m_sheet->insert(m_cursor, m_sheet->parse(val));
 	set_raw();
+	m_mode = NORMAL;
 }
 
 void
@@ -221,9 +241,8 @@ void
 Display::draw_status_bar(const std::string &str)
 {
 	move(0, LINES - 1);
-	std::string fmt = "\33[1;48;5;236;38;5;7m NORMAL \33[48;5;238;38;5;248m%" + std::to_string(COLS - 8) +"s\33[0m";
-	printf(fmt.c_str(), str.c_str());
-	draw_margins(); // TMP
+	std::string fmt = "\33[1;48;5;236;38;5;7m %7.7s \33[48;5;238;38;5;248m%" + std::to_string(COLS - 9) +"s\33[0m";
+	printf(fmt.c_str(), mode_str[m_mode], str.c_str());
 }
 
 void
