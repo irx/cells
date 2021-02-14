@@ -21,10 +21,10 @@ Sheet::~Sheet(void)
 {}
 
 void
-Sheet::insert(Cell::Range range, Value value)
+Sheet::insert(const Cell::Range &range, const Value &value)
 {
-	for (Cell::Pos cur = range.begin; cur.col < range.end.col; ++cur.col)
-		for (cur.col = range.begin.col; cur.row < range.end.row; ++cur.row)
+	for (Cell::Pos cur = range.begin; cur.col <= range.end.col; ++cur.col)
+		for (cur.row = range.begin.row; cur.row <= range.end.row; ++cur.row)
 			m_cells[cur] = Cell(cur, value + range.index_of(cur));
 }
 

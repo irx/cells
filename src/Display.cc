@@ -134,6 +134,12 @@ Display::take_input(void)
 			clear();
 			draw_status_bar();
 			break;
+		case 'i':
+			draw_status_bar("input");
+			take_value();
+			clear();
+			draw_status_bar();
+			break;
 		default:
 			draw_status_bar();
 		}
@@ -153,6 +159,16 @@ Display::take_cmd(void)
 	fflush(stdout);
 	std::string cmd;
 	std::cin >> cmd;
+	set_raw();
+}
+
+void
+Display::take_value(void)
+{
+	set_cooked();
+	std::string val;
+	std::cin >> val;
+	m_sheet->insert(m_cursor, m_sheet->parse(val));
 	set_raw();
 }
 
@@ -245,9 +261,11 @@ Display::draw_cells(void)
 	auto cells = m_sheet->get_cells(m_view);
 	for (auto &c : cells) {
 		auto p = c.get_pos();
-		auto absp = get_disp_pos(p); /* get absolute coordinates */
-		move(absp.first, absp.second);
-		draw_cell(c.get_value().eval(), m_sheet->get_col_siz(p.col), m_cursor.contains(p));
+		if (m_view.contains(p)) {
+			auto absp = get_disp_pos(p); /* get absolute coordinates */
+			move(absp.first, absp.second);
+			draw_cell(c.get_value(), m_sheet->get_col_siz(p.col), m_cursor.contains(p));
+		}
 	}
 }
 

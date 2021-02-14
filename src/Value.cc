@@ -1,4 +1,5 @@
-/* TUI spreadsheet
+/*
+ * TUI spreadsheet
  * 2021 Maksymilian Mruszczak <u at one u x dot o r g>
  */
 
@@ -10,6 +11,17 @@ Value::Value(void)
 {
 	m_value.i = 0;
 	m_type = INTEGER;
+}
+
+Value::Value(const Value &v)
+{
+	if (m_type == STRING)
+		delete m_value.s;
+	m_type = v.m_type;
+	if (m_type == STRING)
+		m_value.s = new std::string(*v.m_value.s);
+	else
+		m_value = v.m_value;
 }
 
 Value::Value(double value)
@@ -40,6 +52,19 @@ Value::~Value(void)
 {
 	if (m_type == STRING)
 		delete m_value.s;
+}
+
+Value &
+Value::operator=(const Value &v)
+{
+	if (m_type == STRING)
+		delete m_value.s;
+	m_type = v.m_type;
+	if (m_type == STRING)
+		m_value.s = new std::string(*v.m_value.s);
+	else
+		m_value = v.m_value;
+	return *this;
 }
 
 Value

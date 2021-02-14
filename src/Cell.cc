@@ -3,6 +3,7 @@
  * 2021 Maksymilian Mruszczak <u at one u x dot o r g>
  */
 
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -13,14 +14,14 @@
 #define LAST_LETTER 0x5a
 #define IS_LETTER(c) (c >= FIRST_LETTER && c <= LAST_LETTER)
 
-Cell::Cell(Cell::Pos p, Value v) : m_value(v), m_pos(p)
+Cell::Cell(const Cell::Pos &p, const Value &v) : m_value(std::make_shared<Value>(v)), m_pos(p)
 {
 }
 
-Value
+std::string
 Cell::get_value(void) const
 {
-	return m_value;
+	return m_value->eval();
 }
 
 Cell::Pos
@@ -71,7 +72,7 @@ Cell::Pos::address_error::address_error(const std::string &a) : runtime_error(a 
 bool
 Cell::Pos::operator<(const Pos &p) const
 {
-	return (row < p.row && col < p.col);
+	return (row < p.row || (row == p.row && col < p.col));
 }
 
 bool

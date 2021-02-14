@@ -1,4 +1,5 @@
-/* TUI spreadsheet
+/*
+ * TUI spreadsheet
  * 2021 Maksymilian Mruszczak <u at one u x dot o r g>
  */
 
@@ -11,12 +12,14 @@ class Value
 		STRING
 	};
 	Value(void);
+	Value(const Value &);
 	Value(double);
 	Value(int);
 	Value(const std::string &);
 	Value(const char *);
 	~Value(void);
 
+	Value &operator=(const Value &);
 	Value operator+(unsigned) const;
 	std::string eval(void) const;
 	Type get_type(void) const;

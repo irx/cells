@@ -11,6 +11,7 @@ public:
 
 	void take_cmd(void);
 	void take_input(void);
+	void take_value(void);
 	void refresh(void);
 
 	static void update_win_size(void);

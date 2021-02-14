@@ -33,11 +33,11 @@ class Cell
 		unsigned index_of(const Pos &) const;
 	};
 
-	Cell(Pos = Pos(), Value = Value());
-	Value get_value(void) const;
+	Cell(const Pos & = Pos(), const Value & = Value());
+	std::string get_value(void) const;
 	Pos get_pos(void) const;
 
 	private:
-	Value m_value;
+	std::shared_ptr<Value> m_value;
 	Pos m_pos;
 };
