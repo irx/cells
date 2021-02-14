@@ -49,5 +49,6 @@ class Display
 	std::shared_ptr<Sheet> m_sheet;
 	Cell::Range m_view, m_cursor;
 	std::string m_filename;
+	bool m_taking_input;
 	Mode m_mode;
 };

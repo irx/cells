@@ -66,6 +66,7 @@ Display::~Display(void)
 void
 Display::take_input(void)
 {
+	m_taking_input = true;
 	clear();
 	draw_status_bar("Hello!");
 	draw_margins();
@@ -74,7 +75,7 @@ Display::take_input(void)
 	move(curp.first, curp.second);
 	fflush(stdout);
 	char c;
-	while (read(STDIN_FILENO, &c, 1) /*== 1*/ && c != 'q') {
+	while (m_taking_input && read(STDIN_FILENO, &c, 1)) {
 		clear();
 		switch (c) {
 		case 'j':
@@ -178,6 +179,8 @@ Display::take_cmd(void)
 		save_sheet();
 	else if (cmd == "r")
 		load_sheet();
+	else if (cmd == "q")
+		m_taking_input = false;
 	else
 		print_err("unrecognised command");
 	set_raw();
