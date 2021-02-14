@@ -48,9 +48,6 @@ Display::Display(std::shared_ptr<Sheet> sht) : m_sheet(sht), m_cursor("A1:A1")
 	struct sigaction sa;
 	memset(&sa, 0, sizeof(sa));
 	sigaddset(&sa.sa_mask, SIGWINCH);
-	//std::function<void(*)(int)> handler{ std::bind(&Display::signal_handler, this, std::placeholders::_1) };
-	//sa.sa_handler = (void (*)(int))handler;
-	//sa.sa_handler = (void (*)(int))std::bind(&Display::signal_handler, this, std::placeholders::_1);
 	sa.sa_handler = signal_handler;
 	if (sigaction(SIGWINCH, &sa, NULL) == -1)
 		throw std::runtime_error("failed initialising signal handling");
@@ -370,6 +367,4 @@ static void
 signal_handler(int signo)
 {
 	Display::update_win_size();
-	//if (signo == SIGWINCH && winch_custom_handler)
-		//(*winch_custom_handler)();
 }
