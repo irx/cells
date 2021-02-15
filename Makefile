@@ -11,7 +11,7 @@ CXX = c++
 CFLAGS = -std=c99 -pedantic -Wall -D_DEFAULT_SOURCE -D_BSD_SOURCE \
 	 -Wno-deprecated-declarations
 CXXFLAGS = -pedantic -Wall -I./include
-LDFLAGS = # no deps ;P
+LDFLAGS = -static # no deps ;P
 
 BIN = cells
 HDR = \
