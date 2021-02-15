@@ -6,6 +6,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <vector>
 #include <Value.h>
 #include <Cell.h>
 #include <Sheet.h>

@@ -15,8 +15,6 @@ Value::Value(void)
 
 Value::Value(const Value &v)
 {
-	if (v.m_type == STRING)
-		delete m_value.s;
 	m_type = v.m_type;
 	if (m_type == STRING)
 		m_value.s = new std::string(*v.m_value.s);
