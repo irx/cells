@@ -3,7 +3,7 @@ cells
 
 This is a C++ implementation a TUI-based spreadsheet utility.
 
-![preview](https://git.1ux.org/cells.git/plain/fig/preview.gif)
+![preview](fig/preview.gif)
 
 ### Usage
 
