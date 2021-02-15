@@ -387,9 +387,13 @@ Display::save_sheet(void)
 		print_err("no filename set");
 		return;
 	}
-	m_sheet->save(m_filename);
-	move(0, LINES);
-	printf("written to file \"%s\"", m_filename.c_str());
+	try {
+		m_sheet->save(m_filename);
+		move(0, LINES);
+		printf("written to file \"%s\"", m_filename.c_str());
+	} catch (const std::exception &e) {
+		print_err(e.what());
+	}
 }
 
 void
@@ -399,9 +403,13 @@ Display::load_sheet(void)
 		print_err("no filename set");
 		return;
 	}
-	m_sheet->load(m_filename);
-	move(0, LINES);
-	printf("read file \"%s\"", m_filename.c_str());
+	try {
+		m_sheet->load(m_filename);
+		move(0, LINES);
+		printf("read file \"%s\"", m_filename.c_str());
+	} catch (const std::exception &e) {
+		print_err(e.what());
+	}
 }
 
 void

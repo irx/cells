@@ -12,10 +12,14 @@
 #include <Display.h>
 
 int
-main(void)
+main(int argc, char *argv[])
 {
 	auto sheet = std::make_shared<Sheet>();
 	Display d(sheet);
+	if (argc > 1) {
+		d.set_sheet_filename(argv[1]);
+		d.load_sheet();
+	}
 	d.take_input();
 	return 0;
 }

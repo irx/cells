@@ -18,7 +18,9 @@ class Display
 	void take_cmd(void);
 	void take_input(void);
 	void take_value(void);
-	void refresh(void);
+	void set_sheet_filename(const std::string &);
+	void save_sheet(void);
+	void load_sheet(void);
 
 	static void update_win_size(void);
 	static unsigned int COLS, LINES;
@@ -34,10 +36,6 @@ class Display
 	void update_hview(void); /* update horizontal view */
 	void update_vview(void); /* update vertical view */
 	void print_err(const char *);
-
-	void set_sheet_filename(const std::string &);
-	void save_sheet(void);
-	void load_sheet(void);
 
 	std::pair<unsigned, unsigned> get_disp_pos(const Cell::Pos &) const;
 	void draw_status_bar(const std::string &str = "");
