@@ -1,0 +1,81 @@
+.TH CELLS 1 cells
+.SH NAME
+cells \- vi-like spreadsheets
+.SH SYNOPSIS
+.B cells
+.RB [ filename ]
+.SH DESCRIPTION
+cells a C++ implementation a interactive terminal-based (TUI) spreadsheet utility.
+The input and the interface is inspierd by vi(1) text editor.
+.P
+There are three modes of operation;
+normal mode for spreadsheet navigation and cell selection,
+input mode for value insertion and
+command mode for saving/loading/exiting.
+Upon startup cells enters normal mode, which is the interactive mode;
+meaning that each kbd key input results in action.
+Other modes can be reached by issuing specific key command.
+.P
+When in distress type `:q' to exit.
+.SH OPTIONS
+.TP
+.B filename
+initial filename; if the file exists it will be read upon startup
+.SH USAGE
+.SS NORMAL mode commands
+.TP
+.B j
+move cursor down
+.TP
+.B k
+move cursor up
+.TP
+.B h
+move cursor left
+.TP
+.B l
+move cursor right
+.TP
+.B J
+extend vertical selection
+.TP
+.B K
+retract vertical selection
+.TP
+.B H
+retract horizontal selection
+.TP
+.B L
+extend horizontal selection
+.TP
+.B g
+jump to cell `A1'
+.TP
+.B G
+jump to bottom-right view range corner cell
+.TP
+.B :
+enter command mode
+.TP
+.B i
+enter input mode
+.TP
+.B d
+delete selected range of cells
+.SS COMMAND mode commands
+.TP
+.B q
+exit
+.TP
+.B f
+.RB < filename >
+set the filename of the current sheet
+.TP
+.B w
+write sheet to file designated by currently set filename
+.TP
+.B r
+read sheet from file designated by currently set filename
+.SH SEE ALSO
+.BR vi (1),
+.BR vim (1)
