@@ -33,6 +33,11 @@ Cell::get_pos(void) const
 Cell::Pos::Pos(void) : row(0), col(0), row_iter(true), col_iter(true)
 {}
 
+/**
+ * Parse cell address (like A1, B4, DA32, etc)
+ * and translate it into unsigned integer pair.
+ * Take into consideration ``constant'' symbols `$'
+ */
 Cell::Pos::Pos(const std::string &addr) : row(0), col(0), row_iter(true), col_iter(true)
 {
 	std::vector<char> l;
@@ -66,9 +71,16 @@ Cell::Pos::Pos(const std::string &addr) : row(0), col(0), row_iter(true), col_it
 	}
 }
 
+/**
+ * Custom exception specifically for address parsing errors
+ */
 Cell::Pos::address_error::address_error(const std::string &a) : runtime_error(a + " is not a cell addr")
 {}
 
+/**
+ * Operator overload needed for map sorting;
+ * this struct is used as a map key.
+ */
 bool
 Cell::Pos::operator<(const Pos &p) const
 {
@@ -96,6 +108,9 @@ Cell::Pos::operator-(const Pos &p) const
 	return r;
 }
 
+/**
+ * Translate unsigned integer into column alphabetical form
+ */
 std::string
 Cell::Pos::get_col_str(void) const
 {
@@ -112,6 +127,9 @@ Cell::Pos::get_col_str(void) const
 	return col_str;
 }
 
+/**
+ * Translate cell coordinates into a address string
+ */
 std::string
 Cell::Pos::get_addr(void) const
 {
@@ -125,6 +143,12 @@ Cell::Range::Range(void) : begin(), end()
 Cell::Range::Range(Pos b, Pos e) : begin(b), end(e)
 {}
 
+/**
+ * Translate string notion of the cell range into
+ * unsigned integer form.
+ * e.g.
+ *   A1:D13 -> {{1,1},{4,13}}
+ */
 Cell::Range::Range(const std::string &str)
 {
 	auto delim = str.find(":");
@@ -132,18 +156,28 @@ Cell::Range::Range(const std::string &str)
 	end = Pos(str.substr(delim + 1));
 }
 
+/**
+ * Translate cell range integers into string address
+ */
 std::string
 Cell::Range::get_addr(void) const
 {
 	return begin.get_addr() + ":" + end.get_addr();
 }
 
+/**
+ * Check if this range contains given address
+ */
 bool
 Cell::Range::contains(const Pos &p) const
 {
 	return (p <= end && begin <= p);
 }
 
+/**
+ * Distance of a given cell from the starting point
+ * of the range
+ */
 unsigned
 Cell::Range::index_of(const Pos &p) const
 {

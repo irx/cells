@@ -38,6 +38,13 @@ struct Display::Tty {
 	struct termios orig_conf;
 };
 
+/**
+ * Display constructor
+ * A terminal config struct is initialised
+ * along with signal handler which is used
+ * to trigger column/row count reeevaluation
+ * when screen size is changed.
+ */
 Display::Display(std::shared_ptr<Sheet> sht) : m_sheet(sht), m_cursor("A1:A1")
 {
 	m_tty = std::make_unique<Tty>();
@@ -56,13 +63,22 @@ Display::Display(std::shared_ptr<Sheet> sht) : m_sheet(sht), m_cursor("A1:A1")
 	set_raw();
 }
 
+/**
+ * Display destructor
+ * Restore orignal terminal config and contents
+ */
 Display::~Display(void)
 {
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_tty->orig_conf);
-	printf("\33[?1049l");
+	printf("\33[?1049l"); /* restore terminal content */
 	fflush(stdout);
 }
 
+/**
+ * Take input from user while in raw terminal mode.
+ * Fetch char after every key stroke and interpret
+ * it as a interactive (NORMAL) mode command.
+ */
 void
 Display::take_input(void)
 {
@@ -160,6 +176,12 @@ Display::take_input(void)
 	}
 }
 
+/**
+ * Enter command mode
+ * Set terminal to cooked mode and
+ * take whole line of input.
+ * Allows entering commands wih arguments.
+ */
 void
 Display::take_cmd(void)
 {
@@ -187,6 +209,13 @@ Display::take_cmd(void)
 	m_mode = NORMAL;
 }
 
+/**
+ * Take new cell value
+ * Enter cooked terminal mode and
+ * take a line of text to be interpreted as
+ * either string or number and put it into
+ * selected cell[s]
+ */
 void
 Display::take_value(void)
 {
@@ -204,27 +233,44 @@ Display::take_value(void)
 	m_mode = NORMAL;
 }
 
+/**
+ * Clear screen magical escape sequence
+ */
 void
 Display::clear(void)
 {
 	printf("\33[2J");
 }
 
+/**
+ * This escape sequence changes position of the cursor
+ */
 void
 Display::move(unsigned x, unsigned y)
 {
 	printf("\33[%u;%uH", y, x);
 }
 
+/**
+ * Set raw terminal mode
+ * Turn off echo and canonical terminal flags.
+ * This allows handling user input in interactive manner.
+ */
 void
 Display::set_raw(void)
 {
 	struct termios raw;
-	tcgetattr(STDIN_FILENO, &raw);
-	raw.c_lflag &= ~(ECHO | ICANON);
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+	tcgetattr(STDIN_FILENO, &raw); /* load stdin config */
+	raw.c_lflag &= ~(ECHO | ICANON); /* disable flags */
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw); /* put modified config in place */
 }
 
+/**
+ * Set cooked terminal mode
+ * Turns echo and canonical mode back on
+ * Cananonical mode means that user input is retrieved
+ * only after carriage return.
+ */
 void
 Display::set_cooked(void)
 {
@@ -234,6 +280,11 @@ Display::set_cooked(void)
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &cooked);
 }
 
+/**
+ * Get position on display
+ * Translate cell address to the absolute display
+ * coordinates.
+ */
 std::pair<unsigned, unsigned>
 Display::get_disp_pos(const Cell::Pos &p) const
 {
@@ -245,6 +296,10 @@ Display::get_disp_pos(const Cell::Pos &p) const
 	return absp;
 }
 
+/**
+ * Draw a nice status bar at the bottom of the screen.
+ * ATM it shows mode and last interactive command issued.
+ */
 void
 Display::draw_status_bar(const std::string &str)
 {
@@ -253,6 +308,9 @@ Display::draw_status_bar(const std::string &str)
 	printf(fmt.c_str(), mode_str[m_mode], str.c_str());
 }
 
+/**
+ * Draw a cell on the screen
+ */
 void
 Display::draw_cell(const std::string &s, unsigned l, bool highlight, bool fill, int fg, int bg)
 {
@@ -265,6 +323,9 @@ Display::draw_cell(const std::string &s, unsigned l, bool highlight, bool fill, 
 	printf(fmt.c_str(), s.c_str());
 }
 
+/**
+ * Draw margins that denote column and row address
+ */
 void
 Display::draw_margins(void)
 {
@@ -279,6 +340,9 @@ Display::draw_margins(void)
 	}
 }
 
+/**
+ * Draw all the cells from sheet that are in visible range
+ */
 void
 Display::draw_cells(void)
 {
@@ -309,6 +373,12 @@ Display::draw_cells(void)
 	}
 }
 
+/**
+ * Reset view
+ * Set view in a way that all the available screen (terminal)
+ * space is filled by cells and cursor ends up at the upper-left
+ * corner of the visible range.
+ */
 void
 Display::update_view(void)
 {
@@ -321,6 +391,10 @@ Display::update_view(void)
 		tmp += m_sheet->get_row_siz(++m_view.end.row);
 }
 
+/**
+ * Update horizontal view
+ * Move view left/right to make curosor visible.
+ */
 void
 Display::update_hview(void)
 {
@@ -343,6 +417,10 @@ Display::update_hview(void)
 	}
 }
 
+/**
+ * Update vertical view
+ * Move view up/down to make curosor visible.
+ */
 void
 Display::update_vview(void)
 {
@@ -365,6 +443,9 @@ Display::update_vview(void)
 	}
 }
 
+/**
+ * Print error at the bottom of the screen
+ */
 void
 Display::print_err(const char *e)
 {
@@ -372,14 +453,20 @@ Display::print_err(const char *e)
 	printf("\33[31;1merror:\33[0m %s", e);
 }
 
+/**
+ * Set file name of the currently open sheet
+ */
 void
 Display::set_sheet_filename(const std::string &filename)
 {
 	m_filename = filename;
-	move(0, LINES);
+	move(0, LINES); /* move to the bottom to print msg there */
 	printf("filename set to \"%s\"", filename.c_str());
 }
 
+/**
+ * Save currenttly open sheet
+ */
 void
 Display::save_sheet(void)
 {
@@ -396,6 +483,9 @@ Display::save_sheet(void)
 	}
 }
 
+/**
+ * Load sheet located under currently selected filename
+ */
 void
 Display::load_sheet(void)
 {
@@ -412,6 +502,11 @@ Display::load_sheet(void)
 	}
 }
 
+/**
+ * Update window size
+ * Retrieve column and row count of the current
+ * terminal view. It is triggered by signal handler.
+ */
 void
 Display::update_win_size(void)
 {
@@ -421,6 +516,9 @@ Display::update_win_size(void)
 	Display::LINES = w.ws_row;
 }
 
+/**
+ * Triggers when window change signal is issued
+ */
 static void
 signal_handler(int signo)
 {

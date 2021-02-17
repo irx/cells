@@ -23,6 +23,11 @@ Sheet::Sheet(void)
 Sheet::~Sheet(void)
 {}
 
+/**
+ * Insert value[s] into given cell range of the sheet
+ * For a given cell value is increased by its index
+ * i.e. distance from the starting point.
+ */
 void
 Sheet::insert(const Cell::Range &range, const Value &value)
 {
@@ -31,6 +36,9 @@ Sheet::insert(const Cell::Range &range, const Value &value)
 			m_cells[cur] = Cell(cur, value + range.index_of(cur));
 }
 
+/**
+ * Remove values in a given range
+ */
 void
 Sheet::remove(const Cell::Range &range)
 {
@@ -39,6 +47,11 @@ Sheet::remove(const Cell::Range &range)
 			m_cells.erase(cur);
 }
 
+/**
+ * Parse input value;
+ * convert it either to int, double
+ * or leave it as a string.
+ */
 Value
 Sheet::parse(const std::string &s)
 {
@@ -53,6 +66,9 @@ Sheet::parse(const std::string &s)
 	return frac ? Value(std::stod(s)) : Value(std::stoi(s));
 }
 
+/**
+ * Get cells from a given range
+ */
 std::vector<Cell>
 Sheet::get_cells(const Cell::Range &r) const
 {
@@ -67,18 +83,27 @@ Sheet::get_cells(const Cell::Range &r) const
 	return cells;
 }
 
+/**
+ * Get width of a column
+ */
 unsigned
 Sheet::get_col_siz(unsigned idx) const
 {
 	return m_col_siz.count(idx) > 0 ? m_col_siz.at(idx) : DEFAULT_WIDTH;
 }
 
+/**
+ * Get height of a row
+ */
 unsigned
 Sheet::get_row_siz(unsigned idx) const
 {
 	return m_row_siz.count(idx) > 0 ? m_row_siz.at(idx) : DEFAULT_HEIGHT;
 }
 
+/**
+ * Translate cell address into terminal coordinates
+ */
 std::pair<unsigned, unsigned>
 Sheet::get_abs_pos(const Cell::Pos &p) const
 {
@@ -91,6 +116,9 @@ Sheet::get_abs_pos(const Cell::Pos &p) const
 	return std::make_pair(c, r);
 }
 
+/**
+ * Open a sheet file
+ */
 void
 Sheet::load(const std::string &filename)
 {
@@ -98,20 +126,23 @@ Sheet::load(const std::string &filename)
 	std::string ln, tk; /* line, token */
 	size_t pos, pos2; /* delimiter position */
 	std::getline(fs, ln);
-	if (ln != "CELLSF")
+	if (ln != "CELLSF") /* magic sequence; basic sanity check */
 		throw std::runtime_error("invalid file type");
+	/* read column sizes */
 	std::getline(fs, ln);
 	for (pos = 0; (pos = ln.find(";")) != std::string::npos && !ln.empty(); ln.erase(0, pos + 1)) {
 		tk = ln.substr(0, pos);
 		pos2 = tk.find(":");
 		m_col_siz[(unsigned)std::stoi(tk.substr(0, pos2))] = (unsigned)std::stoi(tk.substr(pos2 + 1));
 	}
+	/* read row sizes */
 	std::getline(fs, ln);
 	for (pos = 0; (pos = ln.find(";")) != std::string::npos && !ln.empty(); ln.erase(0, pos + 1)) {
 		tk = ln.substr(0, pos);
 		pos2 = tk.find(":");
 		m_row_siz[(unsigned)std::stoi(tk.substr(0, pos2))] = (unsigned)std::stoi(tk.substr(pos2 + 1));
 	}
+	/* read cell contents */
 	while (std::getline(fs, ln)) {
 		pos = ln.find(";");
 		tk = ln.substr(0, pos);
@@ -121,17 +152,21 @@ Sheet::load(const std::string &filename)
 	}
 }
 
+/* Save the sheet into a file */
 void
 Sheet::save(const std::string &filename) const
 {
 	std::fstream fs(filename, std::fstream::out);
 	fs << "CELLSF\n";
+	/* write column sizes */
 	for (auto &c : m_col_siz)
 		fs << c.first << ":" << c.second << ";";
 	fs << '\n';
+	/* write row sizes */
 	for (auto &c : m_row_siz)
 		fs << c.first << ":" << c.second << ";";
 	fs << '\n';
+	/* write cell contents */
 	for (auto &c : m_cells) {
 		auto v = c.second.get_value();
 		fs << c.first.get_addr() << ";" << v->eval() << '\n';
