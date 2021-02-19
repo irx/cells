@@ -45,7 +45,7 @@ struct Display::Tty {
  * to trigger column/row count reeevaluation
  * when screen size is changed.
  */
-Display::Display(std::shared_ptr<Sheet> sht) : m_sheet(sht), m_cursor("A1:A1")
+Display::Display(std::shared_ptr<Sheet> sht) : m_sheet(sht), m_cursor("A1:A1"), m_mode(NORMAL)
 {
 	m_tty = std::make_unique<Tty>();
 	printf("\33[?1049h"); /* save screen */
@@ -192,6 +192,7 @@ void
 Display::take_cmd(void)
 {
 	m_mode = COMMAND;
+	draw_status_bar("command");
 	draw_margins();
 	draw_cells();
 	set_cooked();
