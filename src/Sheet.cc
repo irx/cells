@@ -55,6 +55,8 @@ Sheet::remove(const Cell::Range &range)
 Value
 Sheet::parse(const std::string &s)
 {
+	if (s.empty())
+		return Value();
 	bool frac = false;
 	for (auto &c : s)
 		if (!std::isdigit(c)) {
