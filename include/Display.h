@@ -1,6 +1,11 @@
 /*
  * TUI spreadsheet
  * 2021 Maksymilian Mruszczak <u at one u x dot o r g>
+ *
+ * This class handles terminal-based display and user input.
+ * It manipulates current terminal flags to switch between
+ * input and interactive modes and does the rendering by
+ * printng sequences of escape codes.
  */
 
 class Display
@@ -26,7 +31,7 @@ class Display
 	static unsigned int COLS, LINES;
 
 	private:
-	struct Tty;
+	struct Tty; /* hides termios data struct from this interface */
 
 	void clear(void);
 	void move(unsigned, unsigned);

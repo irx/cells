@@ -1,6 +1,10 @@
 /**
  * TUI spreadsheet
  * 2021 Maksymilian Mruszczak <u at one u x dot o r g>
+ *
+ * Spreadsheet cell constains value and position
+ * Position and postition range are their own structures
+ * that can be used when addressing cells.
  */
 
 class Cell

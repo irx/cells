@@ -1,6 +1,12 @@
 /*
  * TUI spreadsheet
  * 2021 Maksymilian Mruszczak <u at one u x dot o r g>
+ *
+ * This class manages spreadheet data.
+ * Cells and spreadsheet dimensions are stored in a map
+ * so the address of a given cell is unconstrained.
+ * Arbitrary string can be converted to adequate value type
+ * by using parse method.
  */
 
 class Sheet

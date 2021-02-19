@@ -1,6 +1,11 @@
 /*
  * TUI spreadsheet
  * 2021 Maksymilian Mruszczak <u at one u x dot o r g>
+ *
+ * This class stores arbitrary variable.
+ * There are free possible types;
+ * anything that's not an integer or decimal (double)
+ * is stored as a string.
  */
 
 class Value
