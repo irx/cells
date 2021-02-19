@@ -167,9 +167,11 @@ Display::take_input(void)
 			break;
 		case '+':
 			m_sheet->increase_col_siz(m_cursor.end.col);
+			update_hview();
 			break;
 		case '-':
 			m_sheet->decrease_col_siz(m_cursor.end.col);
+			update_hview();
 			break;
 		default:
 			draw_status_bar();
