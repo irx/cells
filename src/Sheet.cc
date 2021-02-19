@@ -102,6 +102,46 @@ Sheet::get_row_siz(unsigned idx) const
 }
 
 /**
+ * Set width of a column
+ */
+void
+Sheet::set_col_siz(unsigned idx, unsigned siz)
+{
+	m_col_siz[idx] = siz;
+}
+
+/**
+ * Set height of a row
+ */
+void
+Sheet::set_row_siz(unsigned idx, unsigned siz)
+{
+	m_row_siz[idx] = siz;
+}
+
+/**
+ * Increase width of a column by 1
+ */
+void
+Sheet::increase_col_siz(unsigned idx)
+{
+	if (m_col_siz.count(idx) < 1)
+		m_col_siz[idx] = DEFAULT_WIDTH;
+	++m_col_siz[idx];
+}
+
+/**
+ * Decrease width of a column by 1
+ */
+void
+Sheet::decrease_col_siz(unsigned idx)
+{
+	if (m_col_siz.count(idx) < 1)
+		m_col_siz[idx] = DEFAULT_WIDTH;
+	--m_col_siz[idx];
+}
+
+/**
  * Translate cell address into terminal coordinates
  */
 std::pair<unsigned, unsigned>

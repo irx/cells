@@ -165,6 +165,12 @@ Display::take_input(void)
 			clear();
 			draw_status_bar("remove");
 			break;
+		case '+':
+			m_sheet->increase_col_siz(m_cursor.end.col);
+			break;
+		case '-':
+			m_sheet->decrease_col_siz(m_cursor.end.col);
+			break;
 		default:
 			draw_status_bar();
 		}

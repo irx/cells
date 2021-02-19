@@ -21,6 +21,10 @@ class Sheet
 	std::vector<Cell> get_cells(const Cell::Range &) const;
 	unsigned get_col_siz(unsigned) const;
 	unsigned get_row_siz(unsigned) const;
+	void set_col_siz(unsigned, unsigned);
+	void set_row_siz(unsigned, unsigned);
+	void increase_col_siz(unsigned);
+	void decrease_col_siz(unsigned);
 	std::pair<unsigned, unsigned> get_abs_pos(const Cell::Pos &) const;
 	void load(const std::string &);
 	void save(const std::string &) const;
